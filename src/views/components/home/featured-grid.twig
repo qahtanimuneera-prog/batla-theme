@@ -1,0 +1,28 @@
+{#
+| component.title         | ?string               |                         |
+| component.products      | Product[] *Collection | Selected products       |
+| component.display_all_text | ?string            | Text of the bottom pill |
+| component.display_all_url  | ?string            |                         |
+#}
+<section component-id="{{ componentId }}" data-testid="store-home-featured-grid" class="s-block b-featured">
+  <div class="container">
+    {% if component.title %}
+      <h2 class="b-section-title">{{ component.title }}</h2>
+    {% endif %}
+    <salla-products-list
+      class="b-featured__list"
+      {% if component.products|length %}
+        source="selected"
+        source-value="[{{ component.products|map((product) => product.id)|join(',') }}]"
+      {% else %}
+        source="latest"
+      {% endif %}
+    ></salla-products-list>
+    {% set url = component.display_all_url %}
+    {% if url and url != '#' %}
+      <div class="b-featured__more">
+        <a class="b-pill b-pill--md" href="{{ url }}">{{ component.display_all_text ?: trans('blocks.home.display_all') }}</a>
+      </div>
+    {% endif %}
+  </div>
+</section>

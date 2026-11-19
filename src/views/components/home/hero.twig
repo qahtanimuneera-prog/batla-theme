@@ -1,0 +1,44 @@
+{#
+| Variable            | Type    | Description                                   |
+|---------------------|---------|-----------------------------------------------|
+| component.image     | string  | Full-bleed background photo                   |
+| component.title     | ?string | Large headline (editable)                     |
+| component.subtitle  | ?string | Second line (editable)                        |
+| component.button_text | ?string |                                             |
+| component.button_url  | ?string |                                             |
+| component.height    | string  | full / large / medium                         |
+| component.overlay   | int     | Darkening over the photo, 0–70 (%)            |
+| component.show_logo | bool    | Logo badge on the bottom edge of the photo    |
+| position            | int     |                                               |
+#}
+{% set height = component.height ?: 'large' %}
+{% set overlay = component.overlay is null ? 18 : component.overlay %}
+<section component-id="{{ componentId }}" data-testid="store-home-hero"
+         class="s-block b-hero b-hero--{{ height }} {{ component.show_logo ? 'b-hero--with-badge' : '' }}"
+         style="--b-hero-scrim: {{ overlay / 100 }};">
+  <div class="b-hero__media">
+    {% if component.image %}
+      <img class="b-hero__img" src="{{ component.image }}" alt="{{ component.title ?: store.name }}"
+           {{ position == 0 ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"' }}>
+    {% endif %}
+    <span class="b-hero__scrim" aria-hidden="true"></span>
+  </div>
+
+  <div class="b-hero__content">
+    {% if component.title %}
+      <h2 class="b-hero__title">{{ component.title }}</h2>
+    {% endif %}
+    {% if component.subtitle %}
+      <p class="b-hero__subtitle">{{ component.subtitle }}</p>
+    {% endif %}
+    {% if component.button_text and component.button_url %}
+      <a class="b-hero__btn" href="{{ component.button_url }}">{{ component.button_text }}</a>
+    {% endif %}
+  </div>
+
+  {% if component.show_logo %}
+    <a class="b-hero__badge" href="{{ store.url }}" aria-label="{{ store.name }}">
+      <img src="{{ store.logo|cdn(400) }}" alt="{{ store.name }}" width="220" height="220">
+    </a>
+  {% endif %}
+</section>

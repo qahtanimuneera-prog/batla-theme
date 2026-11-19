@@ -1,0 +1,17 @@
+{#
+| component.links         | object[] | Outlined pill buttons |
+| component.links[].title | string   |                       |
+| component.links[].url   | string   |                       |
+#}
+<section component-id="{{ componentId }}" data-testid="store-home-pill-links"
+         class="s-block b-pills {{ position > 0 ? 'b-pills--after-badge' : '' }}">
+  <div class="container">
+    <div class="b-pills__grid">
+      {% for link in component.links %}
+        {% if link.title %}
+          <a class="b-pill" href="{{ link.url ?: '#' }}">{{ link.title }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>

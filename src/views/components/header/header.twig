@@ -1,0 +1,99 @@
+{#
+  Batla header — transparent glass header.
+  Home page: floats over the first section (the "hero" component) with full transparency.
+  Inner pages: a short band showing a blurred photo (theme setting) with the store wordmark centered.
+  | cart.items_count | int | |
+#}
+{% set is_home = is_page('index') and theme.settings.get('transparent_home_header', true) %}
+{% set inner_img = theme.settings.get('inner_header_image') %}
+{% set glass = theme.settings.get('header_glass_opacity', 22) %}
+{% set icon_op = theme.settings.get('header_icon_opacity', 85) %}
+{% set scrim = theme.settings.get('header_scrim_opacity', 18) %}
+
+<header data-testid="store-header"
+        class="store-header b-header {{ is_home ? 'b-header--overlay' : 'b-header--inner' }}"
+        style="--b-glass: {{ glass / 100 }}; --b-icon-op: {{ icon_op / 100 }}; --b-scrim: {{ scrim / 100 }};">
+
+  {% if not is_home %}
+    <div class="b-header__bg" aria-hidden="true">
+      {% if inner_img %}
+        <img src="{{ inner_img }}" alt="" loading="eager" fetchpriority="high">
+      {% endif %}
+      <span class="b-header__scrim"></span>
+    </div>
+  {% endif %}
+
+  <div id="mainnav" class="b-nav">
+    <div class="inner">
+      <div class="container b-nav__row">
+
+        {# Start side (right in Arabic): menu, cart, search #}
+        <div class="b-nav__start">
+          <a data-testid="store-header-mobile-toggle" class="mburger lg:!hidden b-icon-btn" href="#mobile-menu" aria-label="{{ trans('blocks.header.main_menu') }}">
+            <svg width="28" height="22" viewBox="0 0 30 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M3 4h24M3 12h24M3 20h24"/></svg>
+          </a>
+          <button type="button" class="b-drawer-toggle b-icon-btn !hidden lg:!flex" aria-label="{{ trans('blocks.header.main_menu') }}" aria-controls="b-drawer" aria-expanded="false">
+            <svg width="30" height="24" viewBox="0 0 30 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M3 4h24M3 12h24M3 20h24"/></svg>
+          </button>
+
+          <salla-cart-summary data-testid="store-header-cart" class="b-cart">
+            <span slot="icon" class="b-icon-btn">
+              <svg width="30" height="28" viewBox="0 0 32 30" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 11h26l-3 15H6z"/><path d="M10 11l5-8M22 11l-5-8M11 16v6M16 16v6M21 16v6"/></svg>
+            </span>
+          </salla-cart-summary>
+
+          {% if is_home %}
+            <div class="b-search hidden md:block">
+              <salla-search data-testid="store-header-search" inline oval height="44"></salla-search>
+            </div>
+            <button type="button" class="b-icon-btn md:!hidden" aria-label="{{ trans('common.elements.search') }}" onclick="salla.event.dispatch('search::open')">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            </button>
+          {% else %}
+            <button type="button" class="b-icon-btn" aria-label="{{ trans('common.elements.search') }}" onclick="salla.event.dispatch('search::open')">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            </button>
+          {% endif %}
+
+          <salla-user-menu data-testid="store-header-user-menu" class="b-user" avatar-only show-header show-trigger></salla-user-menu>
+        </div>
+
+        {# Center: store wordmark on inner pages #}
+        {% if not is_home %}
+          <a data-testid="store-header-logo" class="b-wordmark" href="{{ store.url }}">
+            {{ theme.settings.get('wordmark_text') ?: store.name }}
+            <h2 class="sr-only">{{ store.name }}</h2>
+          </a>
+        {% else %}
+          <h1 class="sr-only">{{ store.name }}</h1>
+        {% endif %}
+
+        {# End side (left in Arabic): quick text links on home, logo on inner pages #}
+        <div class="b-nav__end">
+          <custom-main-menu class="{{ is_home ? 'b-menu--inline' : 'b-menu--hidden-desktop' }}"></custom-main-menu>
+          {% if not is_home %}
+            <a class="b-mini-logo" href="{{ store.url }}" aria-label="{{ store.name }}">
+              <img src="{{ store.logo|cdn(160) }}" alt="{{ store.name }}" width="64" height="64" loading="eager">
+            </a>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {# Desktop drawer opened by the menu button #}
+  <div id="b-drawer" class="b-drawer" hidden>
+    <button type="button" class="b-drawer__backdrop" aria-label="{{ trans('common.elements.close') }}"></button>
+    <aside class="b-drawer__panel" role="dialog" aria-modal="true" aria-label="{{ trans('blocks.header.main_menu') }}">
+      <button type="button" class="b-drawer__close b-icon-btn" aria-label="{{ trans('common.elements.close') }}">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
+      </button>
+      <a class="b-drawer__brand" href="{{ store.url }}"><img src="{{ store.logo|cdn(200) }}" alt="{{ store.name }}" loading="lazy"></a>
+      <salla-menu class="b-drawer__menu" source="header"></salla-menu>
+      <hr class="b-drawer__sep">
+      <salla-menu class="b-drawer__menu b-drawer__menu--small" source="footer"></salla-menu>
+      <salla-social class="b-drawer__social"></salla-social>
+    </aside>
+  </div>
+</header>

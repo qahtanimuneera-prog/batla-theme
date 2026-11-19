@@ -1,0 +1,23 @@
+{#
+| component.image     | string  | Full-bleed background photo           |
+| component.title     | ?string |                                       |
+| component.text      | ?string | Paragraphs (line breaks kept)         |
+| component.show_logo | bool    | Light outline version of the logo     |
+| component.overlay   | int     | 0–70 (%)                              |
+#}
+{% set overlay = component.overlay is null ? 30 : component.overlay %}
+<section component-id="{{ componentId }}" data-testid="store-home-story" class="s-block b-story" style="--b-hero-scrim: {{ overlay / 100 }};">
+  {% if component.image %}
+    <img class="b-story__img" src="{{ component.image }}" alt="" loading="lazy">
+  {% endif %}
+  <span class="b-story__scrim" aria-hidden="true"></span>
+  <div class="container b-story__inner">
+    <div class="b-story__text">
+      {% if component.title %}<h2 class="b-story__title">{{ component.title }}</h2>{% endif %}
+      {% if component.text %}<div class="b-story__body">{{ component.text|nl2br }}</div>{% endif %}
+    </div>
+    {% if component.show_logo %}
+      <div class="b-story__logo"><img src="{{ store.logo|cdn(400) }}" alt="{{ store.name }}" loading="lazy"></div>
+    {% endif %}
+  </div>
+</section>
